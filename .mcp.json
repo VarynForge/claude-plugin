@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "varynforge": {
+      "type": "http",
+      "url": "https://app.varynforge.com/api/mcp?via=plugin"
+    }
+  }
+}
