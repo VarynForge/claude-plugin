@@ -44,6 +44,6 @@ skills/
 
 ## Conventions
 
-- Git operations go through the Graphite CLI (`gt`); PRs via `gh`.
+- Plain `git` for version control, `gh` for PRs — no extra tooling required of contributors.
 - No emojis in commit messages, PR titles, or code comments.
 - Keep the skill layer small and credible. Resist adding a fourth skill, options, or configuration — smallest surface that works.

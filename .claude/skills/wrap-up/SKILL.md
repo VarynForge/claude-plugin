@@ -9,26 +9,15 @@ Use this skill when a task is complete and ready to be shipped. It runs the full
 
 **This repo is public.** Commit messages, PR titles, PR bodies, and review comments are all customer-facing surface. No internal ticket economics, budget figures, ADR contents, or internal repo paths in any of them. Brand red lines apply everywhere: no "premium", no "powered by AI", no competitor names, no "unlimited".
 
+Version control is plain `git` plus the `gh` CLI — no other tooling is assumed, so external contributors can follow the same flow.
+
 ## Workflow
 
 Execute the following steps in order. Do NOT skip steps. If a step fails, fix the issue before proceeding.
 
-### Graphite CLI
-
-This project uses the Graphite CLI (`gt`) for all git operations. Key commands:
-
-- `gt ls` — list branches in the current stack
-- `gt log` — show the stack graph
-- `gt modify -a -m "title" -m "body"` — canonical one-liner: stages all changes (`-a`) and either creates the first commit on the branch or amends the existing one automatically
-- `gt submit` — push and create/update PRs for the entire stack
-
-**NEVER use `gt create` in the wrap-up flow.** By the time this skill runs, the task branch has already been created and is checked out. `gt create` would start a new child branch, leaving the original empty and blocking `gt submit`. Always commit onto the current branch with `gt modify`.
-
-**NEVER use raw `git add` + `git commit`.** It bypasses Graphite stack tracking. `gt modify -a -m ...` handles both the "fresh first commit" case and the "amend existing" case — no need to branch.
-
 ### Step 1: Update CLAUDE.md
 
-Review all changed files (via `gt diff` against the base branch). If the changes alter the repo's structure, conventions, or the rules a future session must know, update the root `CLAUDE.md` to match. Skip for content-only skill edits that change no convention.
+Review all changed files (via `git diff main...HEAD`). If the changes alter the repo's structure, conventions, or the rules a future session must know, update `.claude/CLAUDE.md` to match. Skip for content-only skill edits that change no convention. (Session instructions live at `.claude/CLAUDE.md`, not the repo root — a root CLAUDE.md fails plugin validation.)
 
 ### Step 2: Repo Invariants Check
 
@@ -39,40 +28,31 @@ Review all changed files (via `gt diff` against the base branch). If the changes
 
 ### Step 3: Validate
 
-Run `claude plugin validate --strict`. Fix any failures and re-run until clean. This mirrors CI — do not proceed until it passes.
+Run `claude plugin validate --strict .`. With `marketplace.json` present this checks only the marketplace manifest, so also validate plugin mode the way CI does: copy the repo to a temp dir, delete `.claude-plugin/marketplace.json` from the copy, and run `claude plugin validate --strict <copy>`. Fix any failures and re-run until both pass.
 
 ### Step 4: Commit
 
-Run `gt ls` to confirm you're on the task branch (not `main`). Then commit with:
+Confirm you are on a feature branch, not `main` (`git branch --show-current`); create one if needed. Then:
 
 ```bash
-gt modify -a -m "VAR-XX: Short title" -m "$(cat <<'EOF'
-Multi-line body explaining the what and why, written for a public audience.
-
-Co-Authored-By: Claude <noreply@anthropic.com>
-EOF
-)"
+git add -A
+git commit -m "VAR-XX: Short title" -m "Multi-line body explaining the what and why, written for a public audience."
 ```
 
-`gt modify -a` handles both cases automatically:
-
-- **Fresh branch (no prior commit):** creates the first commit.
-- **Branch with existing commit:** amends the existing commit.
-
-Default to a single cohesive commit per wrap-up.
+Default to a single cohesive commit per wrap-up: if the branch already has an unreviewed commit for this task, amend it (`git commit --amend`) rather than stacking fixups. Once a PR has review activity, add follow-up commits instead — never rewrite history under a reviewer.
 
 ### Step 5: Identify the Linear Ticket
 
-Extract the Linear ticket ID from the branch name (format: `prefix/VAR-XX-description`). If the branch doesn't contain a ticket ID, ask the user. The ID may appear in commit/PR titles as a plain reference, but PR bodies must not quote internal ticket content.
+Extract the Linear ticket ID from the branch name (format: `var-XX-description` or `prefix/VAR-XX-description`). If the branch doesn't contain a ticket ID, ask the user. The ID may appear in commit/PR titles as a plain reference, but PR bodies must not quote internal ticket content.
 
-### Step 6: Submit and Create PR
+### Step 6: Push and Create PR
 
-1. Run `gt submit` to push and create/update PRs for the stack.
-2. After submit, update the PR title and description via `gh pr edit`:
+1. Push: `git push -u origin <branch>` (add `--force-with-lease` only when amending a branch that has no review activity yet).
+2. Create or update the PR via `gh pr create` / `gh pr edit`:
    - PR title referencing the ticket ID (e.g., `VAR-XX: Short description`)
    - PR body including:
      - `## Summary` — bullet points of what changed, written for a public reader
-     - `## Test plan` — checklist of manual verification steps (always includes `claude plugin validate --strict` passing)
+     - `## Test plan` — checklist of manual verification steps (always includes both validation modes from Step 3 passing)
      - Link to the Linear ticket (format: `[VAR-XX](https://linear.app/varyn-forge/issue/VAR-XX)`)
      - Footer: `Generated with [Claude Code](https://claude.com/claude-code)`
 
@@ -87,10 +67,8 @@ If all changes are within scope, skip this step.
 
 ### Step 8: Final Verification
 
-Run `gt ls` and `gh pr view` to confirm the stack and PR state. Return the **Graphite PR URL** (from `gt submit` output, format: `https://app.graphite.com/github/pr/...`) to the user, not the GitHub URL.
-
-Then open the Graphite PR URL in the browser:
+Run `gh pr view --json state,url` to confirm the PR state, return the PR URL to the user, and open it:
 
 ```bash
-xdg-open "https://app.graphite.com/github/pr/..."
+xdg-open "https://github.com/VarynForge/claude-plugin/pull/..."
 ```
