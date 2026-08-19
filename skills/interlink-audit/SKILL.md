@@ -33,7 +33,7 @@ Target shape, one entry per page in the audited scope:
 }
 ```
 
-`description` and `keywords` are optional but drive suggestion quality — include them when the source has them. `links` lists the page's internal links by target `id`, in the same canonical form. Targets that fall outside the corpus are fine to keep: the analyzer reports them as *unresolved* rather than dropping them.
+`description` and `keywords` are optional but drive suggestion quality — include them when the source has them, and fold any alternate title, meta title, or excerpt text into `description`: the suggestion ranking reads only these fields, so text left out of the corpus is text the ranking never sees. `links` lists the page's internal links by target `id`, in the same canonical form. Targets that fall outside the corpus are fine to keep: the analyzer reports them as *unresolved* rather than dropping them.
 
 ### Local content repo (markdown, MDX, or similar)
 
