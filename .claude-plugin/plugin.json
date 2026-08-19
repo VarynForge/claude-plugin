@@ -1,7 +1,7 @@
 {
   "name": "varynforge",
-  "version": "0.1.0",
-  "description": "Keyword research and draft checking for agents. Three markdown skills plus the VarynForge MCP server connection.",
+  "version": "0.2.0",
+  "description": "Keyword research, draft checking, and internal-link auditing for agents. Four skills plus the VarynForge MCP server connection.",
   "author": {
     "name": "VarynForge",
     "url": "https://varynforge.com"
@@ -9,5 +9,5 @@
   "homepage": "https://varynforge.com",
   "repository": "https://github.com/VarynForge/claude-plugin",
   "license": "MIT",
-  "keywords": ["keyword-research", "content", "draft-check", "writing", "mcp"]
+  "keywords": ["keyword-research", "content", "draft-check", "interlink-audit", "internal-links", "writing", "mcp"]
 }

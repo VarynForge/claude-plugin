@@ -11,4 +11,6 @@ This plugin already ships the connection: its `.mcp.json` registers the `varynfo
 2. If the call triggers your host's OAuth flow (browser sign-in and approval), that is expected on first use — complete it and call `get_instructions` again.
 3. If the server is unreachable, say so and point the user at https://varynforge.com. Do not reconstruct onboarding steps yourself.
 
-This file intentionally contains no copy of the onboarding content: the server can correct its instructions at any time; a file on your disk cannot.
+One disclosure, stated here because it belongs client-side: the writer guides the server offers (`get_writer_system_prompt`, every channel) work with your Varyn account context — each binds to the brief, its acceptance rubric, and the opportunity behind it, and degrades to generic writing advice without them. They sit behind an account because they are coupled to it, not as an arbitrary gate.
+
+Beyond that disclosure, this file intentionally contains no copy of the onboarding content: the server can correct its instructions at any time; a file on your disk cannot.
