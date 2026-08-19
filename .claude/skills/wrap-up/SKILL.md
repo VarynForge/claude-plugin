@@ -21,8 +21,8 @@ Review all changed files (via `git diff main...HEAD`). If the changes alter the 
 
 ### Step 2: Repo Invariants Check
 
-1. **Markdown-only sweep**: confirm the diff adds no scripts, binaries, or executable files anywhere — no `bin/`, `hooks/`, `monitors/`, `agents/` directories. Only `.md`, `.json`, and `.github/workflows/*.yml` belong in this repo (CI enforces the same guard).
-2. **No network calls**: confirm no skill content instructs a fetch, API call, or third-party API key wiring.
+1. **Markdown-only sweep (one allowlisted script)**: confirm the diff adds no scripts, binaries, or executable files anywhere — no `bin/`, `hooks/`, `monitors/`, `agents/` directories. Only `.md`, `.json`, and `.github/workflows/*.yml` belong in this repo, plus exactly one sanctioned exception: `skills/interlink-audit/scripts/analyze.mjs` (self-contained, `node:` stdlib imports only, zero network primitives — CI greps it). Any second script or any dependency needs an explicit rule amendment first (see `.claude/CLAUDE.md` Hard Rules).
+2. **No network calls in shipped code**: confirm nothing in the repo itself performs a fetch, API call, or third-party API key wiring. Skill prose may direct the *host agent* to fetch only under the operator-confirmation, robots.txt, and rate-limit rules written in `interlink-audit`'s SKILL.md.
 3. **Generated file**: if `skills/draft-check/SKILL.md` changed, it must have been regenerated from the app repo's rule registry, never hand-edited. If the diff hand-edits it, stop and regenerate instead.
 4. **String review**: scan every changed user-visible string against the brand red lines above.
 
