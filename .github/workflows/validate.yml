@@ -11,12 +11,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Markdown-only guard
+      - name: Markdown-only guard (one allowlisted script)
         run: |
-          violations=$(git ls-files | grep -vE '^(\.github/workflows/[^/]+\.yml|.*\.md|.*\.json)$' || true)
+          violations=$(git ls-files | grep -vE '^(\.github/workflows/[^/]+\.yml|.*\.md|.*\.json|skills/interlink-audit/scripts/analyze\.mjs)$' || true)
           if [ -n "$violations" ]; then
-            echo "Files that are neither markdown nor JSON found (hard rule: markdown-only repo):"
+            echo "Unexpected non-markdown/JSON files (hard rule: the only script allowed is skills/interlink-audit/scripts/analyze.mjs):"
             echo "$violations"
+            exit 1
+          fi
+
+      - name: Analyzer script guard (stdlib-only, zero network primitives)
+        run: |
+          script="skills/interlink-audit/scripts/analyze.mjs"
+          if grep -nE 'fetch|node:http|node:net|node:dgram|node:tls|child_process|XMLHttpRequest|WebSocket|require\(|import\(' "$script"; then
+            echo "Forbidden primitive found in $script (hard rule: no network-capable or dependency-bearing scripts)."
+            exit 1
+          fi
+          if grep -nE "from ['\"]" "$script" | grep -vE "from ['\"]node:"; then
+            echo "Non-stdlib import found in $script (hard rule: node: stdlib imports only)."
             exit 1
           fi
 

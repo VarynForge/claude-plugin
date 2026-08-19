@@ -5,20 +5,20 @@
     "url": "https://varynforge.com"
   },
   "metadata": {
-    "description": "VarynForge plugin marketplace: keyword research and draft checking for agents."
+    "description": "VarynForge plugin marketplace: keyword research, draft checking, and internal-link auditing for agents."
   },
   "plugins": [
     {
       "name": "varynforge",
       "source": "./",
-      "description": "Keyword research and draft checking for agents. Three markdown skills plus the VarynForge MCP server connection.",
+      "description": "Keyword research, draft checking, and internal-link auditing for agents. Four skills plus the VarynForge MCP server connection.",
       "author": {
         "name": "VarynForge",
         "url": "https://varynforge.com"
       },
       "homepage": "https://varynforge.com",
       "license": "MIT",
-      "keywords": ["keyword-research", "content", "draft-check", "writing", "mcp"]
+      "keywords": ["keyword-research", "content", "draft-check", "interlink-audit", "internal-links", "writing", "mcp"]
     }
   ]
 }
