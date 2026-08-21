@@ -13,7 +13,7 @@ jobs:
 
       - name: Markdown-only guard (one allowlisted script)
         run: |
-          violations=$(git ls-files | grep -vE '^(\.github/workflows/[^/]+\.yml|.*\.md|.*\.json|skills/interlink-audit/scripts/analyze\.mjs)$' || true)
+          violations=$(git ls-files | grep -vE '^(\.gitignore|\.github/workflows/[^/]+\.yml|.*\.md|.*\.json|skills/interlink-audit/scripts/analyze\.mjs)$' || true)
           if [ -n "$violations" ]; then
             echo "Unexpected non-markdown/JSON files (hard rule: the only script allowed is skills/interlink-audit/scripts/analyze.mjs):"
             echo "$violations"
